@@ -94,12 +94,11 @@
             const captureButton = document.getElementById('captureButton');
             const filterOptions = document.querySelectorAll('.filterOption');
             const imageContainer = document.getElementById('imageContainer');
-            const saveButton = document.getElementById('saveButton');
 
             let stream;
 
             // Access the user's media devices
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
                 .then(mediaStream => {
                     stream = mediaStream;
                     preview.srcObject = stream;
@@ -130,17 +129,21 @@
                 capturedImage.src = canvas.toDataURL();
                 imageContainer.appendChild(capturedImage);
                 saveButton.style.display = 'block';
-                saveButton.addEventListener('click', () => {
-                    const link = document.createElement('a');
-                    link.href = capturedImage.src;
-                    link.download = 'captured_photo.png';
-                    link.click();
-                });
 
                 // Stop video stream tracks
                 const tracks = stream.getTracks();
                 tracks.forEach(track => track.stop());
                 preview.srcObject = null;
             });
+
+            // Function to save the captured photo
+            saveButton.addEventListener('click', () => {
+                const capturedImage = imageContainer.querySelector('img');
+                const link = document.createElement('a');
+                link.href = capturedImage.src;
+                link.download = 'captured_photo.png';
+                link.click();
+            });
         });
+
     </script>
